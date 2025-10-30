@@ -46,6 +46,9 @@ def main():
     scaler = torch.cuda.amp.GradScaler(enabled=use_amp and device.type == "cuda")
 
     best_val_acc = 0.0
+    no_improvement = 0
+    patience = 10
+
     save_path = Path(__file__).resolve().parent / "best.pt"
 
     # Trackers for plotting
@@ -99,6 +102,7 @@ def main():
             # Save best model
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
+                no_improvement = 0
                 torch.save(
                     {"model_state": model.state_dict(),
                         "epoch": epoch,
@@ -106,6 +110,13 @@ def main():
                     save_path
                 )
                 print(f"New best val_acc {best_val_acc:.4f}")
+            else:
+                no_improvement += 1
+                print(f"No improvement for {no_improvement} epochs")
+            
+            if no_improvement >= patience:
+                print(f"Early stopping triggered after {patience} epochs with no improvement")
+                break
 
     except KeyboardInterrupt:
         # Ensure progress is saved
