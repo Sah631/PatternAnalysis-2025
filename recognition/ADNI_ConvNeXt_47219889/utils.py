@@ -1,5 +1,10 @@
+import random
+
+import numpy as np
+import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
+from tqdm import tqdm
 
 
 def get_transforms(img_size=224):
@@ -56,3 +61,86 @@ def get_data_loaders(train_ds=None, val_ds=None, test_ds=None, batch_size=32, nu
     )
 
     return train_loader, val_loader, test_loader
+
+def train_one_epoch(model, device, train_loader, optimizer, scaler, loss_fn, use_amp=True):
+    model.train()
+    run_loss, n_batches = 0.0, 0
+    correct, total = 0, 0
+
+    for x, y in tqdm(train_loader):
+        x = x.to(device, non_blocking=True).contiguous(memory_format=torch.channels_last)
+        y = y.to(device, non_blocking=True)
+
+        optimizer.zero_grad(set_to_none=True)
+        if use_amp and device.type == "cuda":
+            with torch.amp.autocast("cuda"):
+                logits = model(x)
+                loss = loss_fn(logits, y)
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+        else:
+            logits = model(x)
+            loss = loss_fn(logits, y)
+            loss.backward()
+            optimizer.step()
+
+        run_loss += loss.item()
+        n_batches += 1
+
+        correct += (logits.argmax(1) == y).sum().item()
+        total += y.size(0)
+
+    train_loss = run_loss / max(1, n_batches)
+    train_acc  = correct / max(1, total)
+    return train_loss, train_acc
+
+def evaluate_one_epoch(model, device, loader, loss_fn, use_amp=True):
+    model.eval()
+    run_loss, n_batches = 0.0, 0
+    correct, total = 0, 0
+
+    with torch.inference_mode():
+        for x, y in loader:
+            x = x.to(device, non_blocking=True).contiguous(memory_format=torch.channels_last)
+            y = y.to(device, non_blocking=True)
+
+            if use_amp and device.type == "cuda":
+                with torch.amp.autocast("cuda"):
+                    logits = model(x)
+                    loss = loss_fn(logits, y)
+            else:
+                logits = model(x)
+                loss = loss_fn(logits, y)
+
+            run_loss += loss.item()
+            n_batches += 1
+
+            preds = logits.argmax(dim=1)
+            correct += (preds == y).sum().item()
+            total += y.size(0)
+
+    val_loss = run_loss / max(1, n_batches)
+    val_acc  = correct / max(1, total)
+    return val_loss, val_acc
+
+def set_seed(s=42):
+    random.seed(s)
+    np.random.seed(s)
+    torch.manual_seed(s)
+    torch.cuda.manual_seed_all(s)
+
+def wd_params(model, weight_decay: float):
+    decay, no_decay = [], []
+    for n, p in model.named_parameters():
+        if not p.requires_grad:
+            continue
+
+        if p.ndim == 1 or n.endswith(".bias"):
+            no_decay.append(p)
+        else:
+            decay.append(p)
+    return [
+        {"params": decay, "weight_decay": weight_decay},
+        {"params": no_decay, "weight_decay": 0.0},
+    ]
