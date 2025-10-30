@@ -1,11 +1,14 @@
 import random
 
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
 
+
+# Data
 
 def get_transforms(img_size=224):
     train_tfms = transforms.Compose([
@@ -61,6 +64,9 @@ def get_data_loaders(train_ds=None, val_ds=None, test_ds=None, batch_size=32, nu
     )
 
     return train_loader, val_loader, test_loader
+
+
+# Training and Validation
 
 def train_one_epoch(model, device, train_loader, optimizer, scaler, loss_fn, use_amp=True):
     model.train()
@@ -144,3 +150,29 @@ def wd_params(model, weight_decay: float):
         {"params": decay, "weight_decay": weight_decay},
         {"params": no_decay, "weight_decay": 0.0},
     ]
+
+
+# Plotting
+
+def plot_metrics(t_acc, v_acc, t_loss, v_loss):
+    # --- Accuracy plot ---
+    plt.figure(figsize=(7, 4))
+    plt.plot(t_acc, label="Training Accuracy")
+    plt.plot(v_acc, label="Validation Accuracy")
+    plt.xlabel("Epoch")
+    plt.ylabel("Accuracy")
+    plt.title("Accuracy vs Epochs")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+    # --- Loss plot ---
+    plt.figure(figsize=(7, 4))
+    plt.plot(t_loss, label="Training Loss")
+    plt.plot(v_loss, label="Validation Loss")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.title("Loss vs Epochs")
+    plt.legend()
+    plt.grid(True)
+    plt.show()

@@ -12,6 +12,7 @@ from recognition.ADNI_ConvNeXt_47219889.utils import (
     evaluate_one_epoch,
     set_seed,
     wd_params,
+    plot_metrics,
 )
 
 
@@ -110,6 +111,9 @@ def main():
         # Ensure progress is saved
         print("\nSaving last checkpoint")
         torch.save({"model_state": model.state_dict()}, save_path.with_name("last.pt"))
+    
+    # Create Plots
+    plot_metrics(t_acc=t_acc, v_acc=v_acc, t_loss=t_loss, v_loss=v_loss)
 
     # Report best validation accuracy
     print(f"Best val_acc: {best_val_acc:.4f}")
