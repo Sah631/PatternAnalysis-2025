@@ -15,8 +15,9 @@ def get_transforms(img_size=224):
         transforms.Pad((0, 8, 0, 8), fill=0),
         transforms.Resize((img_size, img_size)),
         transforms.Grayscale(1),
-        transforms.RandomRotation(degrees=5),
-        transforms.RandAugment(num_ops=2, magnitude=5),
+        transforms.RandomRotation(degrees=8),
+        transforms.RandomAffine(degrees=0, translate=(0.02,0.02), scale=(0.98,1.02), shear=(-3,3)),
+        transforms.ColorJitter(brightness=0.05, contrast=0.05),
         transforms.ToTensor(),
         transforms.Normalize((0.5,), (0.5,)),
     ])
