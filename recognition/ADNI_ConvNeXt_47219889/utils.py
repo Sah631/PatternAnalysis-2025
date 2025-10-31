@@ -8,9 +8,13 @@ from torchvision import transforms
 from tqdm import tqdm
 
 
-# Data
+# --- Data ---
 
 def get_transforms(img_size=224):
+    """
+    Return training and evaluation transforms for MRI images.
+    Includes resizing, grayscale conversion, light augmentation, and normalisation.
+    """
     train_tfms = transforms.Compose([
         transforms.Pad((0, 8, 0, 8), fill=0),
         transforms.Resize((img_size, img_size)),
@@ -32,7 +36,11 @@ def get_transforms(img_size=224):
 
     return train_tfms, eval_tfms
 
-def get_data_loaders(train_ds=None, val_ds=None, test_ds=None, batch_size=32, num_workers=4, prefetch_factor=4):
+def get_data_loaders(train_ds=None, val_ds=None, test_ds=None, batch_size=64, num_workers=8, prefetch_factor=4):
+    """
+    Build DataLoaders for train, validation, and test datasets if provided.
+    Returns a tuple of (train_loader, val_loader, test_loader).
+    """
     train_loader, val_loader, test_loader = None, None, None
 
     if train_ds:
@@ -72,9 +80,13 @@ def get_data_loaders(train_ds=None, val_ds=None, test_ds=None, batch_size=32, nu
     return train_loader, val_loader, test_loader
 
 
-# Training and Validation
+# --- Training and Validation ---
 
 def train_one_epoch(model, device, train_loader, optimizer, scaler, loss_fn, use_amp=True):
+    """
+    Train the model for one epoch and return average training loss and accuracy.
+    Supports mixed-precision (AMP) training when enabled.
+    """
     model.train()
     run_loss, n_batches = 0.0, 0
     correct, total = 0, 0
@@ -108,6 +120,10 @@ def train_one_epoch(model, device, train_loader, optimizer, scaler, loss_fn, use
     return train_loss, train_acc
 
 def evaluate_one_epoch(model, device, loader, loss_fn, use_amp=True):
+    """
+    Evaluate model performance on a validation or test loader.
+    Returns average loss and accuracy without computing gradients.
+    """
     model.eval()
     run_loss, n_batches = 0.0, 0
     correct, total = 0, 0
@@ -137,12 +153,18 @@ def evaluate_one_epoch(model, device, loader, loss_fn, use_amp=True):
     return val_loss, val_acc
 
 def set_seed(s=42):
+    """
+    Set random seeds across python, numpy, and torch for reproducibility.
+    """
     random.seed(s)
     np.random.seed(s)
     torch.manual_seed(s)
     torch.cuda.manual_seed_all(s)
 
 def wd_params(model, weight_decay: float):
+    """
+    Separate model parameters into decay and no-decay groups for AdamW optimization.
+    """
     decay, no_decay = [], []
     for n, p in model.named_parameters():
         if not p.requires_grad:
@@ -158,9 +180,12 @@ def wd_params(model, weight_decay: float):
     ]
 
 
-# Plotting
+# --- Plotting ---
 
 def plot_metrics(t_acc, v_acc, t_loss, v_loss):
+    """
+    Plot training and validation accuracy and loss curves over all epochs.
+    """
     # --- Accuracy plot ---
     plt.figure(figsize=(7, 4))
     plt.plot(t_acc, label="Training Accuracy")
@@ -184,9 +209,12 @@ def plot_metrics(t_acc, v_acc, t_loss, v_loss):
     plt.show()
 
 
-# Testing Functions
+# --- Testing Functions ---
 
 def load_checkpoint(model, checkpoint_path):
+    """
+    Load model weights from a saved checkpoint path into the provided model.
+    """
     checkpoint = torch.load(checkpoint_path, map_location="cpu")
     if isinstance(checkpoint, dict):
         state = checkpoint.get("model_state", checkpoint)
@@ -195,6 +223,9 @@ def load_checkpoint(model, checkpoint_path):
     model.load_state_dict(state)
 
 def test_accuracy(model, device, loader):
+    """
+    Compute and return model accuracy on the given test dataset.
+    """
     model.eval()
     correct, total = 0, 0
 
