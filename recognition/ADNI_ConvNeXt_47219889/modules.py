@@ -32,6 +32,7 @@ class LayerNormChannel(nn.Module):
         self.ln = nn.LayerNorm(num_channels, eps=eps)
 
     def forward(self, x):
+        # Permute to NHWC for channel-wise normalisation, then back to NCHW
         x = x.permute(0, 2, 3, 1)
         x = self.ln(x)
         x = x.permute(0, 3, 1, 2)
@@ -39,7 +40,10 @@ class LayerNormChannel(nn.Module):
     
 
 class ConvNeXtBlock(nn.Module):
-    """ConvNeXt Block as described in the paper."""
+    """
+    Implements a ConvNeXt block with depthwise convolution, channel-wise LayerNorm,
+    pointwise MLP, optional layer scaling, and stochastic depth for regularisation.
+    """
     def __init__(
             self,
             dim,
@@ -63,17 +67,22 @@ class ConvNeXtBlock(nn.Module):
         self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
         
     def forward(self, x):
-        res = x
+        res = x # Save input for residual connection
 
+        # Depthwise convolution + LayerNorm
         x = self.dw_conv(x)
         x = self.ln(x)
+
+        # Pointwise MLP (1x1 conv -> GELU -> 1x1 conv)
         x = self.pw_conv1(x)
         x = self.activation(x)
         x = self.pw_conv2(x)
 
+        # Optional layer scaling to stabilise training
         if self.gamma is not None:
             x = self.gamma * x
         
+        # Apply stochastic depth and add residual
         x = self.drop_path(x)
         x = x + res
 
@@ -88,12 +97,18 @@ class DownsampleLayer(nn.Module):
         self.reduction = nn.Conv2d(in_dim, out_dim, kernel_size=2, stride=2)
 
     def forward(self, x):
+        # Normalise then downsample feature maps
         x = self.norm(x)
         x = self.reduction(x)
         return x
     
 
 class ConvNeXt(nn.Module):
+    """
+    ConvNeXt architecture adapted for single-channel MRI classification.
+    Comprises four stages of ConvNeXt blocks with downsampling, global pooling,
+    and a linear head for final class prediction.
+    """
     def __init__(
         self,
         in_chans=1,

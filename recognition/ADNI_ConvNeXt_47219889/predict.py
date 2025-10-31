@@ -1,3 +1,8 @@
+"""
+Evaluate the best ConvNeXt checkpoint on the ADNI test set.
+Loads the saved model, computes overall test accuracy, and prints the result.
+"""
+
 from pathlib import Path
 
 import torch
@@ -14,7 +19,7 @@ from recognition.ADNI_ConvNeXt_47219889.utils import (
 
 
 def main():
-    # Model and data
+    # --- Model and Data ---
     model = ConvNeXt(depths=[3, 3, 27, 3], drop_path_rate=0.1)
 
     ROOT = Path(__file__).resolve().parents[2] / "ADNI" / "AD_NC"
@@ -35,6 +40,7 @@ def main():
     # Evaluate and report test accuracy
     test_acc = test_accuracy(model=model, device=device, loader=test_loader)
     print(f"Test accuracy: {test_acc:.4f}")
+
 
 if __name__ == "__main__":
     main()

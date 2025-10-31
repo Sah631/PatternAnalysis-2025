@@ -1,3 +1,8 @@
+"""
+Train ConvNeXt on ADNI Dataset with mixed precision, cosine LR, early stopping,
+and best-checkpoint saving. Produces training and validation curves via utils.plot_metrics.
+"""
+
 from pathlib import Path
 
 import torch
@@ -17,7 +22,7 @@ from recognition.ADNI_ConvNeXt_47219889.utils import (
 
 
 def main():
-    # Model and Data
+    # --- Model and Data ---
     model = ConvNeXt(depths=[3, 3, 27, 3], drop_path_rate=0.1)
 
     ROOT = Path(__file__).resolve().parents[2] / "ADNI" / "AD_NC"
@@ -29,7 +34,7 @@ def main():
 
     train_loader, val_loader, _ = get_data_loaders(train_ds, val_ds)
 
-    # Config
+    # --- Config ---
     set_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device).to(memory_format=torch.channels_last)
@@ -54,14 +59,14 @@ def main():
     # Trackers for plotting
     t_acc, v_acc, t_loss, v_loss = [], [], [], []
 
-    # Training summary
+    # --- Training summary ---
     print(f"Device: {device.type}")
     print(f"Training for {epochs} epochs")
     print(f"Saving best model to: {save_path}")
 
     try:
         for epoch in range(1, epochs + 1):
-            # Train
+            # --- Train ---
             train_loss, train_acc = train_one_epoch(
                 model=model,
                 device=device,
@@ -72,7 +77,7 @@ def main():
                 use_amp=use_amp,
             )
 
-            # Validate
+            # --- Validate ---
             val_loss, val_acc = evaluate_one_epoch(
                 model=model,
                 device=device,
@@ -99,7 +104,7 @@ def main():
                 f"| val loss {val_loss:.4f} | val acc {val_acc:.4f}"
             )
 
-            # Save best model + early stopping
+            # --- Save best model + early stopping ---
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 no_improvement = 0
