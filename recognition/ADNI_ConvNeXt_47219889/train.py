@@ -99,7 +99,7 @@ def main():
                 f"| val loss {val_loss:.4f} | val acc {val_acc:.4f}"
             )
 
-            # Save best model
+            # Save best model + early stopping
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 no_improvement = 0

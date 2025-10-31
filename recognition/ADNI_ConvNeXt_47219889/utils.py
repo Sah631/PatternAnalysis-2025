@@ -176,3 +176,31 @@ def plot_metrics(t_acc, v_acc, t_loss, v_loss):
     plt.legend()
     plt.grid(True)
     plt.show()
+    
+
+# Testing Functions
+
+def load_checkpoint(model, checkpoint_path):
+    checkpoint = torch.load(checkpoint_path, map_location="cpu")
+    if isinstance(checkpoint, dict):
+        state = checkpoint.get("model_state", checkpoint)
+    else:
+        state = checkpoint
+    model.load_state_dict(state)
+
+def test_accuracy(model, device, loader):
+    model.eval()
+    correct, total = 0, 0
+
+    with torch.inference_mode():
+        for x, y in loader:
+            x = x.to(device, non_blocking=True).contiguous(memory_format=torch.channels_last)
+            y = y.to(device, non_blocking=True)
+
+            logits = model(x)
+            preds = logits.argmax(dim=1)
+            correct += (preds == y).sum().item()
+            total += y.size(0)
+    
+    test_acc = correct / max(1, total)
+    return test_acc
