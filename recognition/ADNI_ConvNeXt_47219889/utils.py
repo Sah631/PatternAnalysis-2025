@@ -32,36 +32,41 @@ def get_transforms(img_size=224):
     return train_tfms, eval_tfms
 
 def get_data_loaders(train_ds=None, val_ds=None, test_ds=None, batch_size=32, num_workers=4, prefetch_factor=4):
-    train_loader = DataLoader(
-        train_ds,
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=num_workers,
-        pin_memory=True,
-        persistent_workers=True,
-        prefetch_factor=prefetch_factor,
-        drop_last=True,
-    )
+    train_loader, val_loader, test_loader = None, None, None
 
-    val_loader = DataLoader(
-        val_ds,
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=num_workers,
-        pin_memory=True,
-        persistent_workers=True,
-        prefetch_factor=prefetch_factor,
-    )
+    if train_ds:
+        train_loader = DataLoader(
+            train_ds,
+            batch_size=batch_size,
+            shuffle=True,
+            num_workers=num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+            prefetch_factor=prefetch_factor,
+            drop_last=True,
+        )
 
-    test_loader = DataLoader(
-        test_ds,
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=num_workers,
-        pin_memory=True,
-        persistent_workers=True,
-        prefetch_factor=prefetch_factor,
-    )
+    if val_ds:
+        val_loader = DataLoader(
+            val_ds,
+            batch_size=batch_size,
+            shuffle=False,
+            num_workers=num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+            prefetch_factor=prefetch_factor,
+        )
+
+    if test_ds:
+        test_loader = DataLoader(
+            test_ds,
+            batch_size=batch_size,
+            shuffle=False,
+            num_workers=num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+            prefetch_factor=prefetch_factor,
+        )
 
     return train_loader, val_loader, test_loader
 
@@ -176,7 +181,7 @@ def plot_metrics(t_acc, v_acc, t_loss, v_loss):
     plt.legend()
     plt.grid(True)
     plt.show()
-    
+
 
 # Testing Functions
 

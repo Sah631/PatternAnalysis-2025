@@ -22,7 +22,7 @@ def main():
     _, eval_tfms = get_transforms()
 
     test_ds = ADNIData(ROOT, split="test", eval_transform=eval_tfms)
-    test_loader = get_data_loaders(test_ds=test_ds)
+    _, _, test_loader = get_data_loaders(test_ds=test_ds)
 
     set_seed(42)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
