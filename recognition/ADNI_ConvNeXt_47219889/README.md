@@ -1,7 +1,7 @@
 # Classifying Alzheimer's Disease using ConvNeXt
 
 ## Problem
-Alzheimer's disease is a type of dementia that affects memory, thinking, and behaviour, and can eventually become severe enough to impact the ability to complete daily tasks. Early detection of this disease can help individuals better plan their medical care and live a better quality of life. This project applies ConvNeXt, a deep learning model, to classify MRI brain scans into Alzheimer’s Disease (AD) and Normal Control (NC) categories using the ADNI dataset.
+Alzheimer's disease is a type of dementia that affects memory, thinking, and behaviour, and can eventually become severe enough to impact the ability to complete daily tasks. Early detection of this disease can help individuals better plan their medical care and live a better quality of life (Alzheimer's Association, n.d.). This project applies ConvNeXt, a deep learning model, to classify MRI brain scans into Alzheimer’s Disease (AD) and Normal Control (NC) categories using the ADNI dataset.
 
 ConvNeXt was chosen for this task because it combines the strengths of traditional convolutional networks with modern design improvements that make it more effective and efficient. MRI brain scans show very subtle structural differences between Alzheimer’s Disease and Normal Control subjects, so the model needs to recognise both fine details and overall patterns in the brain. ConvNeXt’s design allows it to do this effectively, making it well-suited for medical imaging tasks where accuracy and reliability are essential.
 
@@ -10,6 +10,8 @@ The Alzheimer’s Disease Neuroimaging Initiative (ADNI) dataset was used in thi
 
 ## ConvNeXt Architecture
 ![ConvNeXt Architecture](figures/convnext_architecture.png)
+
+*Figure reproduced from Guo & Qiao (2024).*
 
 As illustrated in the diagram above, ConvNeXt processes MRI images through a hierarchical series of convolutional stages. The input image is first divided into non-overlapping patches using a convolutional stem, then passed through four stages of ConvNeXt blocks separated by downsampling layers. Each ConvNeXt block performs depthwise convolution for spatial feature extraction, Layer Normalisation, pointwise MLP transformation, and residual addition, enabling efficient feature reuse. The network progressively reduces spatial resolution while increasing channel depth, capturing both local and global structural information from the brain scans. Finally, global average pooling and a linear classifier output the probability of each class.
 
@@ -45,7 +47,6 @@ The model achieved a final test accuracy of 76.37%, demonstrating reasonable gen
 Overall, the results indicate that ConvNeXt was able to effectively distinguish between Alzheimer’s Disease and Normal Control MRI scans. Minor fluctuations in validation accuracy suggest some overfitting, which could be mitigated in future work through additional regularisation, hyperparameter tuning, or data augmentation.
 
 ## Setup and Reproducibility
-
 Key dependencies and versions used:
 - `python` 3.12.12
 - `torch` 2.8.0+cu126  
@@ -71,3 +72,10 @@ To reproduce results:
         ```
         python predict.py
         ```
+
+## References
+Alzheimer’s Association. (n.d.). What is Alzheimer’s disease? Symptoms & causes. https://www.alz.org/alzheimers-dementia/what-is-alzheimers
+
+Guo, B., & Qiao, Z. (2024). Attention-based ConvNeXt with a parallel multiscale dilated convolution residual module for fault diagnosis of rotating machinery. Expert Systems with Applications, 236, Article 123764. https://doi.org/10.1016/j.eswa.2024.123764
+
+Liu, Z., Mao, H., Wu, C.-Y., Feichtenhofer, C., Darrell, T., & Xie, S. (2022). A ConvNet for the 2020s (arXiv preprint arXiv:2201.03545v2). https://doi.org/10.48550/arXiv.2201.03545
