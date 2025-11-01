@@ -1,3 +1,18 @@
+"""
+Utility functions for data preprocessing, training, evaluation, and visualisation.
+
+This module provides helper functions used throughout the
+classification project, including:
+- Data transformation and DataLoader creation
+- Training and validation loops with optional mixed-precision (AMP)
+- Weight decay grouping for optimizers
+- Reproducibility setup through fixed seeds
+- Plotting of accuracy + loss curves
+- Checkpoint loading and test set evaluation
+
+All utilities are designed for readability, reproducibility, and modularity across training and inference scripts.
+"""
+
 import random
 
 import matplotlib.pyplot as plt

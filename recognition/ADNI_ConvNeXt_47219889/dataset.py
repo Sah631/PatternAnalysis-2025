@@ -1,3 +1,8 @@
+"""
+Handles dataset loading and splitting for the ADNI MRI images,
+creating reproducible train, validation, and test sets with transforms.
+"""
+
 import os
 
 import numpy as np

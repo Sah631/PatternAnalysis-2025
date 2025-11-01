@@ -1,3 +1,17 @@
+"""
+Core model architecture definitions.
+
+This module implements the ConvNeXt architecture and its key components:
+- DropPath: stochastic depth regularisation
+- LayerNormChannel: channel-wise layer normalisation for NCHW tensors
+- ConvNeXtBlock: main building block with depthwise conv, MLP, and residuals
+- DownsampleLayer: feature map resolution reduction
+- ConvNeXt: complete model adapted for single-channel MRI classification
+
+All components are written in PyTorch and designed for clarity, modularity, and compatibility
+with medical imaging data.
+"""
+
 import math
 import torch
 import torch.nn as nn
