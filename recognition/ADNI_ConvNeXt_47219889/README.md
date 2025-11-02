@@ -56,7 +56,7 @@ Key dependencies and versions used:
 - `matplotlib` 3.10.0  
 - `tqdm` 4.67.1  
 
-All experiments were executed on an NVIDIA A100 GPU.  
+All experiments were executed on Google Colab, using an NVIDIA A100 GPU.  
 To ensure reproducibility, a fixed random seed (`42`) was applied across NumPy, PyTorch, and Python’s `random` module.  
 Deterministic operations were enabled where possible, and identical preprocessing and data splits were used for all runs.
 
