@@ -6,7 +6,7 @@ Alzheimer's disease is a type of dementia that affects memory, thinking, and beh
 ConvNeXt was chosen for this task because it combines the strengths of traditional convolutional networks with modern design improvements that make it more effective and efficient. MRI brain scans show very subtle structural differences between Alzheimer’s Disease and Normal Control subjects, so the model needs to recognise both fine details and overall patterns in the brain. ConvNeXt’s design allows it to do this effectively, making it well-suited for medical imaging tasks where accuracy and reliability are essential.
 
 ## Dataset
-The Alzheimer’s Disease Neuroimaging Initiative (ADNI) dataset was used in this project. It contains MRI brain scans collected from individuals diagnosed with Alzheimer’s Disease (AD) and those classified as Normal Controls (NC). The dataset provides a reliable and well-balanced benchmark for evaluating deep learning models on medical image classification tasks. The dataset was provided on Rangpur, UQ’s HPC cluster, with the data already organised into separate training and testing sets. The training set contained 21,520 images, while the testing set contained 9,000 images.
+The Alzheimer’s Disease Neuroimaging Initiative (ADNI) dataset was used in this project. It contains MRI brain scans collected from individuals diagnosed with Alzheimer’s Disease and those classified as Normal Controls. The dataset provides a reliable and well-balanced benchmark for evaluating deep learning models on medical image classification tasks. The dataset was provided on Rangpur, UQ’s HPC cluster, with the data already organised into separate training and testing sets. The training set contained 21520 images, while the testing set contained 9000 images.
 
 ## ConvNeXt Architecture
 ![ConvNeXt Architecture](figures/convnext_architecture.png)
@@ -29,11 +29,11 @@ As illustrated in the diagram above, ConvNeXt processes MRI images through a hie
 
 ### Train–Validation Split
 20% of the training set was used for validation to monitor generalisation performance during training.  
-The validation split was stratified to preserve the proportion of Alzheimer’s Disease (AD) and Normal Control (NC) samples, ensuring that class imbalance did not bias the validation results.
+The validation split was stratified to preserve the proportion of AD and NC samples, ensuring that class imbalance did not bias the validation results.
 
 ### Train–Test Split
 The dataset provided on Rangpur, UQ’s HPC cluster, was already divided into separate training and testing sets.  
-The training set contained 21,520 images, while the testing set contained 9,000 images.
+The training set contained 21520 images, while the testing set contained 9000 images.
 
 ## Training and Results
 The model was trained for 50 epochs using mixed-precision training, a cosine learning rate schedule, and early stopping with a patience of 10 epochs. The plots below show the training and validation performance over time.
@@ -44,7 +44,7 @@ The model was trained for 50 epochs using mixed-precision training, a cosine lea
 
 The model achieved a final test accuracy of 76.37%, demonstrating reasonable generalisation to unseen data.
 
-Overall, the results indicate that ConvNeXt was able to effectively distinguish between Alzheimer’s Disease and Normal Control MRI scans. Minor fluctuations in validation accuracy suggest some overfitting, which could be mitigated in future work through additional regularisation, hyperparameter tuning, or data augmentation.
+Overall, the results indicate that ConvNeXt was able to effectively distinguish between AD and NC MRI scans. Minor fluctuations in validation accuracy suggest some overfitting, which could be mitigated in future work through additional regularisation, hyperparameter tuning, or data augmentation.
 
 ## Setup and Reproducibility
 Key dependencies and versions used:
